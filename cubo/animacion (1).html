@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>three.js</title>
+</head>
+
+<body>
+	<div id="container"></div>
+	<script src="js/three.min.js"></script>
+	<script src="js/controls/OrbitControls.js"></script>
+
+	<script>
+		var container;
+		var camera, controls, scene, renderer;
+		init();
+		render();
+
+		function init() {
+
+			camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+			camera.position.z = 500;
+
+			controls = new THREE.OrbitControls(camera);
+			controls.addEventListener('change', render);
+
+			scene = new THREE.Scene();
+			scene.fog = new THREE.FogExp2(0xcccccc, 0.002);
+
+
+			//cubo
+			var geometry = new THREE.CubeGeometry(200, 200, 200);
+
+			// cada cara del cubo
+			geometry.faces[0].color.setHex(0xC70039);
+			geometry.faces[1].color.setHex(0xC70039);
+
+			geometry.faces[2].color.setHex(0x85E997);
+			geometry.faces[3].color.setHex(0x85E997);
+
+			geometry.faces[4].color.setHex(0xD485E9);
+			geometry.faces[5].color.setHex(0xD485E9);
+
+			geometry.faces[6].color.setHex(0x85E9E3);
+			geometry.faces[7].color.setHex(0x85E9E3);
+
+			geometry.faces[8].color.setHex(0xE9E985);
+			geometry.faces[9].color.setHex(0xE9E985);
+
+			geometry.faces[10].color.setHex(0xE9BC85);
+			geometry.faces[11].color.setHex(0xE9BC85);
+
+
+			/* 		var material = new THREE.MeshBasicMaterial({ vertexColors: THREE.FaceColors, overdraw: 0.5 });
+					cube = new THREE.Mesh(geometry, material);
+					cube.position.y = 150;
+					scene.add(cube);
+		 */
+			// Escala para aumentar 100 veces
+			/* 			const scaleFactor = 100;
+			
+						const bodyGeometry = new THREE.BoxGeometry(0.9 * scaleFactor, 2 * scaleFactor, 0.5 * scaleFactor);
+						const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+			
+			
+						const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+						scene.add(body);
+			
+						// Crear las extremidades
+						const limbGeometry = new THREE.BoxGeometry(0.3 * scaleFactor, 1 * scaleFactor, 0.3 * scaleFactor);
+						const limbMaterial = new THREE.MeshBasicMaterial({ color: 0xAFF1AA });
+						const leftLimb = new THREE.Mesh(limbGeometry, limbMaterial);
+						leftLimb.position.set(-0.6 * scaleFactor, 0, 0);
+						scene.add(leftLimb);
+			
+						const rightLimb = new THREE.Mesh(limbGeometry, limbMaterial);
+						rightLimb.position.set(0.6 * scaleFactor, 0, 0);
+						scene.add(rightLimb);
+			
+						// Crear las piernas
+						const legGeometry = new THREE.BoxGeometry(0.3 * scaleFactor, 1 * scaleFactor, 0.3 * scaleFactor);
+						const legMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+			
+						const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+						leftLeg.position.set(-0.4 * scaleFactor, -1 * scaleFactor, 0);
+						scene.add(leftLeg);
+			
+						const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+						rightLeg.position.set(0.4 * scaleFactor, -1 * scaleFactor, 0);
+						scene.add(rightLeg);
+			
+						const headGeometry = new THREE.SphereGeometry(0.3 * scaleFactor, 32, 32);
+						const headMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+			
+						const head = new THREE.Mesh(headGeometry, headMaterial);
+						head.position.set(0, 1.3 * scaleFactor, 0);
+						scene.add(head);
+			 */
+
+			// Crear una plataforma (piso)
+			const platformWidth = 200;
+			const platformHeight = 10;
+			const platformDepth = 200;
+			const platformGeometry = new THREE.BoxGeometry(platformWidth, platformHeight, platformDepth);
+			const platformMaterial = new THREE.MeshBasicMaterial({ color: 0x27AE60 });
+			const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+
+			// Posicionar la plataforma en el suelo
+			platform.position.y = -35;
+
+			// Agregar la plataforma a la escena
+			scene.add(platform);
+
+
+			// pared de atras
+			// Crear las paredes (cubos)
+			const wallWidth = 10;
+			const wallHeight = 150;
+			const wallDepth = platformDepth;
+			const wallGeometry = new THREE.BoxGeometry(wallWidth, wallHeight, wallDepth);
+			const wallMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 });
+
+			const leftWall = new THREE.Mesh(wallGeometry, wallMaterial);
+			leftWall.position.set(-(platformWidth / 2 + wallWidth / 2), 35, 0);
+			scene.add(leftWall);
+
+
+
+			// cuadro
+
+			const wWidth = 1;
+			const wHeight = 50;
+			const wDepth = 70;
+			const wGeometry = new THREE.BoxGeometry(wWidth, wHeight, wDepth);
+			const wMaterial = new THREE.MeshBasicMaterial({ color: 0xC39BD3 });
+
+			const leftW = new THREE.Mesh(wGeometry, wMaterial);
+			leftW.position.set(-(platformWidth / 2 + wWidth / 2 - 1), 35, 0);
+			scene.add(leftW);
+
+
+			// cuerpo humano
+
+
+
+			const scaleFactor = 20;
+
+			const bodyGeometry = new THREE.BoxGeometry(0.9 * scaleFactor, 2 * scaleFactor, 0.5 * scaleFactor);
+			const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+
+			const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+			scene.add(body);
+
+			// Crear las extremidades
+			const limbGeometry = new THREE.BoxGeometry(0.3 * scaleFactor, 1 * scaleFactor, 0.3 * scaleFactor);
+			const limbMaterial = new THREE.MeshBasicMaterial({ color: 0xAFF1AA });
+			const leftLimb = new THREE.Mesh(limbGeometry, limbMaterial);
+			leftLimb.position.set(-0.6 * scaleFactor, 0, 0);
+			scene.add(leftLimb);
+
+			const rightLimb = new THREE.Mesh(limbGeometry, limbMaterial);
+			rightLimb.position.set(0.6 * scaleFactor, 0, 0);
+			scene.add(rightLimb);
+
+			// Crear las piernas
+			const legGeometry = new THREE.BoxGeometry(0.3 * scaleFactor, 1 * scaleFactor, 0.3 * scaleFactor);
+			const legMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+
+			const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+			leftLeg.position.set(-0.4 * scaleFactor, -1 * scaleFactor, 0);
+			scene.add(leftLeg);
+
+			const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+			rightLeg.position.set(0.4 * scaleFactor, -1 * scaleFactor, 0);
+			scene.add(rightLeg);
+
+			const headGeometry = new THREE.SphereGeometry(0.3 * scaleFactor, 32, 32);
+			const headMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+
+			const head = new THREE.Mesh(headGeometry, headMaterial);
+			head.position.set(0, 1.3 * scaleFactor, 0);
+			scene.add(head);
+
+
+			// Crear una pelota (esfera)
+			const sphereRadius = 10;
+			const sphereSegments = 32;
+			const sphereGeometry = new THREE.SphereGeometry(sphereRadius, sphereSegments, sphereSegments);
+			const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x6CF0E2 });
+			const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+
+			// Establecer la posición de la pelota
+			sphere.position.set(-40, -20, 0); // Colocar la pelota sobre el piso
+
+			scene.add(sphere);
+
+			// Crear el tronco del árbol (cilindro)
+			const trunkRadiusTop = 5;
+			const trunkRadiusBottom = 10;
+			const trunkHeight = 60;
+			const trunkSegments = 32;
+			const trunkGeometry = new THREE.CylinderGeometry(trunkRadiusTop, trunkRadiusBottom, trunkHeight, trunkSegments);
+			const trunkMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 }); // Color marrón para el tronco
+			const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+
+			// Posicionar el tronco en la escena
+			trunk.position.set(50, -10, 0); // Colocar el tronco sobre el piso
+
+			scene.add(trunk);
+
+			// Crear las hojas del árbol (esfera)
+			const leavesRadius = 30;
+			const leavesSegments = 32;
+			const leavesGeometry = new THREE.SphereGeometry(leavesRadius, leavesSegments, leavesSegments);
+			const leavesMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Color verde para las hojas
+			const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+
+			// Posicionar las hojas sobre el tronco
+			leaves.position.set(50, 20 + leavesRadius, 0);
+
+			scene.add(leaves);
+
+
+			// Crear el arco de fútbol (marco)
+			const goalWidth = 100;
+			const goalHeight = 10;
+			const goalDepth = 10;
+			const goalGeometry = new THREE.BoxGeometry(goalWidth, goalHeight, goalDepth);
+			const goalMaterial = new THREE.MeshBasicMaterial({ color: 0x5D6D7E }); // Color blanco para el arco
+			const goal = new THREE.Mesh(goalGeometry, goalMaterial);
+
+			// Posicionar el arco de fútbol en la escena
+			goal.position.set(0, 45, -platformDepth / 2); // Colocar el arco en el extremo del piso
+
+			scene.add(goal);
+
+			// Crear los postes del arco (cilindros)
+			const postRadius = 5;
+			const postHeight = 70;
+			const postSegments = 32;
+			const postGeometry = new THREE.CylinderGeometry(postRadius, postRadius, postHeight, postSegments);
+			const postMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Color negro para los postes
+
+			const leftPost = new THREE.Mesh(postGeometry, postMaterial);
+			leftPost.position.set(-(goalWidth / 2) + postRadius, goalHeight / 2, -platformDepth / 2);
+			scene.add(leftPost);
+
+			const rightPost = new THREE.Mesh(postGeometry, postMaterial);
+			rightPost.position.set((goalWidth / 2) - postRadius, goalHeight / 2, -platformDepth / 2);
+			scene.add(rightPost);
+
+			// Crear el cuerpo del perro (un cubo)
+			const dogBodyWidth = 30;
+			const dogBodyHeight = 15;
+			const dogBodyDepth = 20;
+			const dogBodyGeometry = new THREE.BoxGeometry(dogBodyWidth, dogBodyHeight, dogBodyDepth);
+			const dogBodyMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Color rojo para el cuerpo del perro
+			const dogBody = new THREE.Mesh(dogBodyGeometry, dogBodyMaterial);
+
+			// Posicionar el cuerpo del perro en la escena
+			dogBody.position.set(0, -10, 50); // Colocar el cuerpo en el centro
+
+			scene.add(dogBody);
+
+			// Crear la cabeza del perro (un cubo más pequeño)
+			const dogHeadWidth = 15;
+			const dogHeadHeight = 15;
+			const dogHeadDepth = 15;
+			const dogHeadGeometry = new THREE.BoxGeometry(dogHeadWidth, dogHeadHeight, dogHeadDepth);
+			const dogHeadMaterial = new THREE.MeshBasicMaterial({ color: 0xffcc00 }); // Color amarillo para la cabeza del perro
+			const dogHead = new THREE.Mesh(dogHeadGeometry, dogHeadMaterial);
+
+			// Posicionar la cabeza del perro sobre el cuerpo
+			dogHead.position.set(-15, 5, 50);
+
+			scene.add(dogHead);
+
+			// Crear las patas del perro (cubos)
+			const legWidth = 5;
+			const legHeight = 15;
+			const legDepth = 5;
+			const legGeometry1 = new THREE.BoxGeometry(legWidth, legHeight, legDepth);
+			const legMaterial1 = new THREE.MeshBasicMaterial({ color: 0x000000 });
+			// Color negro para las patas
+
+			// Patas delanteras
+			const frontLeftLeg = new THREE.Mesh(legGeometry1, legMaterial1);
+			frontLeftLeg.position.set(-(dogBodyWidth / 2 - legWidth / 2), -25, 55);
+			scene.add(frontLeftLeg);
+
+			const frontRightLeg = new THREE.Mesh(legGeometry1, legMaterial1);
+			frontRightLeg.position.set(dogBodyWidth / 2 - legWidth / 2, -25, 55);
+			scene.add(frontRightLeg);
+
+			// Patas traseras
+			const backLeftLeg = new THREE.Mesh(legGeometry1, legMaterial1);
+			backLeftLeg.position.set(-(dogBodyWidth / 2 - legWidth / 2), -25, 45);
+			scene.add(backLeftLeg);
+
+			const backRightLeg = new THREE.Mesh(legGeometry1, legMaterial1);
+			backRightLeg.position.set(dogBodyWidth / 2 - legWidth / 2, -25, 45);
+			scene.add(backRightLeg);
+
+
+// Crear un poste de luz (cilindro)
+const posteGeometry = new THREE.CylinderGeometry(5, 5, 150);
+const posteMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
+const poste = new THREE.Mesh(posteGeometry, posteMaterial);
+poste.position.set(90, 35, 90)
+scene.add(poste);
+
+const cuboGeometry = new THREE.BoxGeometry(30, 5, 5); // Ancho x Alto x Profundidad
+const cuboMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const cubo = new THREE.Mesh(cuboGeometry, cuboMaterial);
+cubo.position.set(72	, 105, 90)
+
+scene.add(cubo);
+
+const cilindroGeometry = new THREE.CylinderGeometry(5, 10, 10, 32); // Radio superior, radio inferior, altura y número de segmentos
+const cilindroMaterial = new THREE.MeshBasicMaterial({ color: 0xF9E79F  });
+const cilindro = new THREE.Mesh(cilindroGeometry, cilindroMaterial);
+scene.add(cilindro);
+
+// Posicionar el cilindro
+cilindro.position.set(61, 104, 90);
+
+
+const light = new THREE.PointLight(0xE74C3C , 100);
+light.position.set(50, 50, 50); // Posición del punto luminoso
+scene.add(light);
+
+
+			// renderer
+			renderer = new THREE.WebGLRenderer({ antialias: false });
+			renderer.setClearColor(scene.fog.color, 1);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+
+			container = document.getElementById('container');
+			container.appendChild(renderer.domElement);
+			window.addEventListener('resize', onWindowResize, false);
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			render();
+		}
+
+		function render() {
+			renderer.render(scene, camera);
+		}
+
+
+		// Crear animaciones para mover las extremidades
+		const limbMovement = {
+			y: 0, // posición inicial en el eje Y
+		};
+		const limbTween = new TWEEN.Tween(limbMovement)
+			.to({ y: 0.2 * scaleFactor }, 1000) // Mueve hacia arriba
+			.easing(TWEEN.Easing.Quadratic.InOut)
+			.onUpdate(() => {
+				// Actualiza la posición de las extremidades
+				leftLimb.position.y = limbMovement.y;
+				rightLimb.position.y = -limbMovement.y; // Mueve la extremidad derecha en la dirección opuesta
+			})
+			.yoyo(true) // Hace que la animación se repita hacia arriba y hacia abajo
+			.repeat(Infinity) // Repite infinitamente~~~
+			.start(); // Inicia la animación
+
+		// Renderizar la escena
+		const animate = () => {
+			requestAnimationFrame(animate);
+
+			// Actualizar las animaciones de Tween.js
+			TWEEN.update();
+
+			renderer.render(scene, camera);
+		};
+
+
+
+
+
+
+
+
+
+
+		let initialX = 0; // Posición inicial en el eje X
+		let initialY = 2; // Altura inicial del cubo
+		let horizontalSpeed = 1; // Velocidad horizontal inicial
+		let verticalSpeed = 1; // Velocidad vertical inicial
+		let gravity = -0.005; // Gravedad (negativo para la dirección hacia abajo)
+		let deltaTime = 1; // Factor de tiempo
+
+		function update() {
+			requestAnimationFrame(update);
+
+			// Actualizar la posición horizontal con movimiento parabólico
+			initialX += horizontalSpeed * deltaTime;
+
+			// Actualizar la posición vertical con movimiento parabólico
+			verticalSpeed += gravity * deltaTime;
+			initialY += verticalSpeed * deltaTime;
+
+			// Limitar la altura mínima
+			if (initialY < 0) {
+				initialY = 0;
+				verticalSpeed = -verticalSpeed; // Invertir la velocidad al rebotar
+			}
+			// Actualizar la posición del cubo en ambas direcciones
+			cube.position.x = initialX;
+			cube.position.y = initialY;
+			controls.update();
+			render();
+		}
+
+
+
+
+
+
+
+		// movement
+		document.body.appendChild(renderer.domElement);
+		document.addEventListener("keydown", onDocumentKeyDown, false);
+		function onDocumentKeyDown(event) {
+			var keyCode = event.which;
+			// alert(keyCode);
+			switch (keyCode) {
+				case 38: /*up*/
+				case 87: /*W*/ cube.position.y += 1; break;
+
+				case 37: /*left*/
+				case 65: /*A*/ cube.position.x -= 1; break;
+
+				case 40: /*down*/
+				case 83: /*S*/ cube.position.y -= 1; break;
+
+				case 39: /*right*/
+				case 68: /*D*/ cube.position.x += 1; break;
+
+				case 82: /*R*/ cube.position.z -= 1; break;
+				case 70: /*F*/ cube.position.z += 1; break;
+				case 81: /*Q*/ 	animate(); break;
+				case 90: /*Z*/
+					cube.scale.x += 0.1;
+					cube.scale.y += 0.1;
+					cube.scale.z += 0.1;
+					break;
+				case 88: /*X*/
+					cube.scale.x -= 0.1;
+					cube.scale.y -= 0.1;
+					cube.scale.z -= 0.1;
+					break;
+				case 89:
+					cube.rotation.y += 0.01;
+					break;
+			}
+			render();
+		};
+
+	</script>
+</body>
+
+</html>
